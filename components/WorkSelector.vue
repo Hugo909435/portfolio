@@ -32,19 +32,20 @@
           class="project-slot"
           :style="projectSlotStyle(index, projects.length)"
         >
-          <NuxtLink
-            :to="`/work/${project.slug}`"
+          <button
+            type="button"
             class="project-card"
+            @click="openProjectDetail(project)"
           >
             <span class="project-meta mono">{{ activeCategoryLabel }} · {{ project.year }}</span>
             <span class="project-title serif">{{ project.title }}</span>
             <span class="project-desc">{{ project.desc }}</span>
             <span class="project-tech mono">{{ project.meta }}</span>
-          </NuxtLink>
+          </button>
         </div>
       </div>
 
-    <div class="compass-viewport">
+    <div ref="compassViewportEl" class="compass-viewport" :class="{ 'is-detail': !!detailProject }">
       <div ref="diskWrapEl" class="disk-wrap" aria-hidden="true">
         <div class="disk-surface" />
         <div class="disk-deco-outer" />
@@ -106,12 +107,34 @@
       </div>
     </div>
   </section>
+
+  <Teleport to="body">
+    <div ref="curtainEl" class="g-curtain" />
+  </Teleport>
+
+  <Teleport to="body">
+    <div ref="detailPanelEl" class="g-detail">
+      <button class="g-detail-back mono" @click="closeDetail">← Retour</button>
+      <div class="g-detail-body">
+        <p class="g-detail-eyebrow mono">{{ detailProject?.role }} · {{ detailProject?.year }}</p>
+        <h2 class="g-detail-title serif">{{ detailProject?.title }}</h2>
+        <p class="g-detail-desc">{{ detailProject?.longDesc }}</p>
+        <div class="g-detail-tags">
+          <span v-for="tag in detailProject?.tags" :key="tag" class="g-detail-tag mono">{{ tag }}</span>
+        </div>
+        <a v-if="detailProject?.link" :href="detailProject.link" target="_blank" rel="noopener" class="g-detail-link mono">
+          Voir le projet →
+        </a>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { gsap } from 'gsap'
 import { categories, projectsByCategory } from '~/data/projects'
+import type { Project } from '~/data/projects'
 
 type CategoryKey = (typeof categories)[number]['key']
 type SelectorState = 'idle' | 'spinning' | 'revealed'
@@ -164,6 +187,17 @@ const categoryZoneEl = ref<HTMLElement | null>(null)
 const diskWrapEl = ref<HTMLElement | null>(null)
 const rotorEl = ref<HTMLElement | null>(null)
 const projectGridEl = ref<HTMLElement | null>(null)
+const compassViewportEl = ref<HTMLElement | null>(null)
+const curtainEl = ref<HTMLElement | null>(null)
+const detailPanelEl = ref<HTMLElement | null>(null)
+const detailProject = ref<Project | null>(null)
+
+let isTransitioning = false
+let storedRect = { left: 0, top: 0, width: 0, height: 0, right: 0 }
+let storedOriginalRight = 0
+let storedTargetRight = 0
+let storedRollDegrees = 0
+let rotorIdleTween: gsap.core.Tween | null = null
 
 const state = ref<SelectorState>('idle')
 const selectedCategory = ref<CategoryKey | null>(null)
@@ -357,6 +391,115 @@ function revealCompactCategories() {
   })
 }
 
+function openProjectDetail(project: Project) {
+  if (isTransitioning || !diskWrapEl.value || !compassViewportEl.value || !curtainEl.value || !detailPanelEl.value) return
+  isTransitioning = true
+  detailProject.value = project
+
+  const rect = diskWrapEl.value.getBoundingClientRect()
+  storedRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height, right: rect.right }
+
+  // Mirror position: disk was right: -X, target is right: rect.left (same overhang on left side)
+  storedOriginalRight = window.innerWidth - rect.right  // e.g. -220
+  storedTargetRight = rect.left                          // e.g. 680 → same visual overhang on left
+
+  const distance = rect.left - (window.innerWidth - rect.right) // total travel distance
+  const rollDegrees = (distance / (Math.PI * rect.width)) * 360
+  storedRollDegrees = rollDegrees
+
+  const tl = gsap.timeline({ onComplete: () => { isTransitioning = false } })
+
+  // 1. Fade out cards and UI
+  const cards = getProjectCards()
+  if (cards.length) {
+    tl.to(cards, { autoAlpha: 0, filter: 'blur(14px)', y: -6, duration: 0.3, stagger: { each: 0.04, from: 'end' } })
+  }
+  tl.to([categoryZoneEl.value, hintEl.value], { autoAlpha: 0, duration: 0.25 }, '<')
+
+  // 2. Make the whole compass-viewport fixed so it escapes every stacking context
+  tl.call(() => {
+    gsap.set(compassViewportEl.value!, {
+      position: 'fixed',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      overflow: 'visible',
+      zIndex: 100,
+      pointerEvents: 'none'  // laisse passer les clics vers le panneau détail
+    })
+  })
+
+  // 3. Roll the disk-wrap right→left inside the now-fixed viewport
+  //    disk-wrap uses CSS right/bottom so we animate "right"
+  tl.fromTo(diskWrapEl.value,
+    { right: storedOriginalRight },
+    { right: storedTargetRight, rotation: `+=${rollDegrees}`, duration: 1.6, ease: 'power3.inOut' }
+  )
+  tl.fromTo(curtainEl.value,
+    { clipPath: 'inset(0 0 0 100%)' },
+    { clipPath: 'inset(0 0 0 0%)', duration: 1.6, ease: 'power3.inOut' },
+    '<'
+  )
+
+  // 4. Lancer la rotation continue des aiguilles une fois la boussole posée
+  tl.call(() => {
+    rotorIdleTween = gsap.to(rotorEl.value, {
+      rotation: '+=360',
+      duration: 9,
+      ease: 'none',
+      repeat: -1
+    })
+  })
+
+  // 5. Reveal detail panel
+  tl.fromTo(detailPanelEl.value,
+    { autoAlpha: 0, x: 30 },
+    { autoAlpha: 1, x: 0, duration: 0.75, ease: 'power2.out' },
+    '-=0.3'
+  )
+}
+
+function closeDetail() {
+  if (isTransitioning || !diskWrapEl.value || !compassViewportEl.value || !curtainEl.value || !detailPanelEl.value) return
+  isTransitioning = true
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      gsap.set(compassViewportEl.value!, { clearProps: 'all' })
+      gsap.set(diskWrapEl.value!, { clearProps: 'all' })
+      detailProject.value = null
+      isTransitioning = false
+      nextTick().then(() => {
+        revealProjects()
+        revealCompactCategories()
+        gsap.to(hintEl.value, { autoAlpha: 0.78, duration: 0.4, delay: 0.2 })
+      })
+    }
+  })
+
+  // 0. Stopper la rotation des aiguilles
+  if (rotorIdleTween) {
+    rotorIdleTween.kill()
+    rotorIdleTween = null
+  }
+
+  // 1. Hide detail panel
+  tl.to(detailPanelEl.value, { autoAlpha: 0, x: 20, duration: 0.4, ease: 'power2.in' })
+
+  // 2. Roll compass back right + restore curtain in sync
+  tl.to(diskWrapEl.value, {
+    right: storedOriginalRight,
+    rotation: `-=${storedRollDegrees}`,
+    duration: 1.4,
+    ease: 'power3.inOut'
+  })
+  tl.to(curtainEl.value, {
+    clipPath: 'inset(0 0 0 100%)',
+    duration: 1.4,
+    ease: 'power3.inOut'
+  }, '<')
+}
+
 onMounted(async () => {
   await nextTick()
 
@@ -523,6 +666,8 @@ onMounted(async () => {
     inset 0 1px 0 rgba(236, 228, 211, 0.1),
     0 24px 70px rgba(0, 0, 0, 0.28);
   color: var(--text);
+  cursor: pointer;
+  text-align: left;
   opacity: 0;
   visibility: hidden;
   transition:
@@ -946,6 +1091,21 @@ onMounted(async () => {
   }
 }
 
+/* Quand la boussole est à gauche : gradient sur le bord gauche au lieu du droit */
+.compass-viewport.is-detail::before {
+  top: 0;
+  right: auto;
+  left: -1px;
+  bottom: 0;
+  width: clamp(110px, 10vw, 180px);
+  background: linear-gradient(to left, transparent, var(--bg) 82%);
+}
+
+/* Le layer de recherche reste pleinement visible en mode détail */
+.compass-viewport.is-detail .search-layer {
+  opacity: 1;
+}
+
 @media (max-width: 760px) {
   .work-selector {
     min-height: min(640px, 82vh);
@@ -984,5 +1144,106 @@ onMounted(async () => {
     top: 0;
     width: min(620px, 120vw);
   }
+}
+</style>
+
+<style>
+.g-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  background: var(--bg);
+  pointer-events: none;
+  clip-path: inset(0 0 0 100%);
+}
+
+.g-detail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: clamp(480px, 50%, 860px);
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  padding: clamp(48px, 7vh, 88px) clamp(36px, 5vw, 80px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+}
+
+.g-detail-back {
+  align-self: flex-start;
+  margin-bottom: clamp(36px, 5vh, 56px);
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  letter-spacing: 0.12em;
+  transition: color 0.25s;
+}
+
+.g-detail-back:hover {
+  color: var(--accent);
+}
+
+.g-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.g-detail-eyebrow {
+  margin-bottom: 18px;
+  color: var(--text-faint);
+}
+
+.g-detail-title {
+  margin-bottom: 28px;
+  color: var(--accent);
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(52px, 5.8vw, 92px);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0.92;
+}
+
+.g-detail-desc {
+  max-width: 520px;
+  margin-bottom: 32px;
+  color: var(--text-muted);
+  font-size: clamp(14px, 1.1vw, 17px);
+  line-height: 1.7;
+}
+
+.g-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.g-detail-tag {
+  padding: 4px 13px;
+  border: 1px solid rgba(198, 151, 105, 0.22);
+  border-radius: 100px;
+  color: var(--text-faint);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.g-detail-link {
+  align-self: flex-start;
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: opacity 0.25s;
+}
+
+.g-detail-link:hover {
+  opacity: 0.72;
 }
 </style>

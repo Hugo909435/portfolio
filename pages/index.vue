@@ -6,7 +6,7 @@
       </a>
       <div class="nav-links mono" aria-label="Sections du site">
         <a href="#work">work</a>
-        <a href="mailto:hello@gogo.dev">contact</a>
+        <button class="nav-contact-btn" @click="contactOpen = true">contact</button>
       </div>
     </nav>
 
@@ -26,8 +26,8 @@
         </p>
 
         <div class="hero-actions">
-          <a class="primary-link mono" href="#work">Explorer les projets</a>
-          <a class="ghost-link mono" href="mailto:hello@gogo.dev">Me contacter</a>
+          <button class="primary-link mono" @click="aboutOpen = true">Qui suis-je →</button>
+          <button class="ghost-link mono" @click="contactOpen = true">Contact</button>
         </div>
       </div>
 
@@ -35,8 +35,16 @@
         <WorkSelector />
       </aside>
     </section>
+
+    <AboutView :open="aboutOpen" @close="aboutOpen = false" />
+    <ContactModal :open="contactOpen" @close="contactOpen = false" />
   </main>
 </template>
+
+<script setup lang="ts">
+const contactOpen = ref(false)
+const aboutOpen = ref(false)
+</script>
 
 <style>
 .home {
@@ -86,14 +94,30 @@
   white-space: nowrap;
 }
 
-.nav-links a {
+.nav-links a,
+.nav-contact-btn {
   transition: color 0.25s var(--ease-out);
 }
 
 .nav-links a:hover,
-.nav-links a:focus-visible {
+.nav-links a:focus-visible,
+.nav-contact-btn:hover,
+.nav-contact-btn:focus-visible {
   color: var(--accent);
   outline: none;
+}
+
+.nav-contact-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 0;
 }
 
 .home-stage {

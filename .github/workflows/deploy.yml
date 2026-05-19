@@ -32,3 +32,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./.output/public/
           server-dir: /public_html/
+          port: 21

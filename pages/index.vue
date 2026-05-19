@@ -1,23 +1,19 @@
 <template>
   <main class="home">
     <nav class="site-nav" aria-label="Navigation principale">
-      <a class="brand" href="/" aria-label="Gogo home">
-        <span class="brand-name">gogo</span><span class="brand-ext">.dev</span>
-      </a>
       <div class="nav-links mono" aria-label="Sections du site">
-        <a href="#work">work</a>
         <button class="nav-contact-btn" @click="contactOpen = true">contact</button>
       </div>
     </nav>
 
     <section class="home-stage" aria-labelledby="hero-title">
       <div class="intro-panel">
-        <p class="hero-meta mono">Developer &middot; Vendee, FR &middot; 2026</p>
+        <p class="hero-meta mono">Developer &middot; Vendee &middot; FRANCE &middot; 2026</p>
 
         <div class="hero-title-wrap">
-          <h1 id="hero-title" class="hero-title serif" aria-label="Hello, je suis Gogo.">
+          <h1 id="hero-title" class="hero-title serif" aria-label="Hello, je suis Hugo Beignon.">
             <span class="title-line">Hello, je suis</span>
-            <span class="title-line"><span>Gogo.</span></span>
+            <span class="title-line"><span>Hugo Beignon.</span></span>
           </h1>
         </div>
 
@@ -161,6 +157,7 @@ const aboutOpen = ref(false)
 .title-line {
   display: block;
   overflow: hidden;
+  padding-bottom: 0.08em;
 }
 
 .title-line:nth-child(2) {
@@ -204,8 +201,9 @@ const aboutOpen = ref(false)
 }
 
 .ghost-link {
-  border: 1px solid rgba(236, 228, 211, 0.1);
-  color: var(--text-muted);
+  border: 1px solid rgba(236, 228, 211, 0.24);
+  background: rgba(236, 228, 211, 0.04);
+  color: rgba(236, 228, 211, 0.82);
 }
 
 .primary-link:hover,

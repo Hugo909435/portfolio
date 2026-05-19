@@ -31,7 +31,7 @@
         <!-- Contenu -->
         <div ref="contentRef" class="about-content">
           <p class="about-eyebrow mono">à propos</p>
-          <h2 id="about-title" class="about-title serif">Gogo.</h2>
+          <h2 id="about-title" class="about-title serif">Hugo Beignon.</h2>
 
           <p class="about-lead">
             Développeur front-end basé en Vendée. Je construis des interfaces lisibles, des outils métier sur-mesure et des expériences web soignées — de la maquette au déploiement.
@@ -58,7 +58,33 @@
             </div>
           </div>
 
-          <p ref="locationRef" class="about-location mono">Vendée, France &middot; 2026</p>
+          <div class="about-socials">
+            <a
+              class="about-social mono"
+              href="mailto:hugo.beignon@gmail.com"
+              aria-label="Envoyer un email à Hugo Beignon"
+            >
+              <svg class="about-social-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4.75 6.5h14.5c.69 0 1.25.56 1.25 1.25v8.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-8.5c0-.69.56-1.25 1.25-1.25Zm.83 2 6.42 4.57 6.42-4.57H5.58Zm12.92 7.25v-5.42l-6.06 4.31a.75.75 0 0 1-.88 0L5.5 10.33v5.42h13Z" />
+              </svg>
+              Email
+            </a>
+
+            <a
+              class="about-social mono"
+              href="https://www.linkedin.com/in/hugo-beignon"
+              target="_blank"
+              rel="noopener"
+              aria-label="Profil LinkedIn de Hugo Beignon"
+            >
+              <svg class="about-social-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6.94 8.98H3.72v10.29h3.22V8.98ZM5.33 4.73a1.87 1.87 0 1 0 0 3.74 1.87 1.87 0 0 0 0-3.74ZM20.28 13.36c0-3.08-1.64-4.51-3.83-4.51a3.31 3.31 0 0 0-3.01 1.66h-.04V8.98h-3.08v10.29h3.21v-5.09c0-1.34.25-2.64 1.91-2.64s1.66 1.53 1.66 2.72v5.01h3.21l-.03-5.91Z" />
+              </svg>
+              LinkedIn
+            </a>
+          </div>
+
+          <p ref="locationRef" class="about-location mono">Vendée &middot; France &middot; 2026</p>
         </div>
       </div>
     </Transition>
@@ -414,6 +440,43 @@ function onLeave(el: Element, done: () => void) {
   color: var(--text-faint);
   padding-top: 20px;
   border-top: 1px solid var(--border-soft);
+}
+
+.about-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.about-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  border: 1px solid rgba(198, 151, 105, 0.34);
+  border-radius: 8px;
+  color: rgba(236, 228, 211, 0.82);
+  padding: 10px 14px;
+  transition:
+    border-color 0.25s var(--ease-out),
+    color 0.25s var(--ease-out),
+    transform 0.25s var(--ease-out);
+}
+
+.about-social:hover,
+.about-social:focus-visible {
+  border-color: rgba(198, 151, 105, 0.72);
+  color: var(--accent);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.about-social-icon {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
 }
 
 /* ── Responsive ── */

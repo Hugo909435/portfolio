@@ -13,7 +13,7 @@ export type Project = {
 export const categories = [
   { key: 'pro', label: 'Projet professionnel' },
   { key: 'perso', label: 'Projet personnel' },
-  { key: 'ecole', label: "Projet d'ecole" }
+  { key: 'ecole', label: "Projet d'école" }
 ] as const
 
 export const projectsByCategory: Record<string, Project[]> = {

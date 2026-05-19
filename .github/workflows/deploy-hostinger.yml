@@ -70,8 +70,8 @@ jobs:
             exit 1
           fi
 
-          if [ -n "${FTP_PROTOCOL:-}" ] && [ "$FTP_PROTOCOL" != "ftp" ] && [ "$FTP_PROTOCOL" != "ftps" ]; then
-            echo "FTP_PROTOCOL must be either ftp or ftps when provided."
+          if [ -n "${FTP_PROTOCOL:-}" ] && [ "$FTP_PROTOCOL" != "ftp" ] && [ "$FTP_PROTOCOL" != "ftps" ] && [ "$FTP_PROTOCOL" != "sftp" ]; then
+            echo "FTP_PROTOCOL must be ftp, ftps, or sftp when provided."
             exit 1
           fi
 
@@ -93,19 +93,28 @@ jobs:
           set -euo pipefail
 
           PROTOCOL="${FTP_PROTOCOL:-ftp}"
-          PORT_ARG=""
+          HOST_TARGET="${PROTOCOL}://${FTP_HOST}"
           TARGET_DIR="${REMOTE_DIR:-/public_html}"
 
           if [ -n "${FTP_PORT:-}" ]; then
-            PORT_ARG="set ftp:port ${FTP_PORT};"
+            HOST_TARGET="${HOST_TARGET}:${FTP_PORT}"
           fi
 
-          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "${PROTOCOL}://${FTP_HOST}" <<EOF
-          set ssl:verify-certificate no
-          set net:max-retries 2
-          set net:timeout 20
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "${HOST_TARGET}" <<EOF
+          set cmd:fail-exit yes
           set xfer:clobber on
-          ${PORT_ARG}
+          set net:max-retries 2
+          set net:reconnect-interval-base 5
+          set net:timeout 20
+          set ftp:passive-mode true
+          set ssl:verify-certificate no
+          set sftp:auto-confirm yes
+          debug 3
+          $(if [ "${PROTOCOL}" = "ftps" ]; then echo "set ftp:ssl-force true"; fi)
+          $(if [ "${PROTOCOL}" = "ftps" ]; then echo "set ftp:ssl-protect-data true"; fi)
+          pwd
+          mkdir -p ${TARGET_DIR}
+          cls -la ${TARGET_DIR}
           mirror -R --delete --verbose .output/public/ ${TARGET_DIR}
           bye
           EOF

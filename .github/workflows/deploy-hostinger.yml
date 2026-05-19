@@ -94,7 +94,7 @@ jobs:
 
           PROTOCOL="${FTP_PROTOCOL:-ftp}"
           HOST_TARGET="${PROTOCOL}://${FTP_HOST}"
-          TARGET_DIR="${REMOTE_DIR:-/public_html}"
+          TARGET_DIR="${REMOTE_DIR:-public_html}"
 
           if [ -n "${FTP_PORT:-}" ]; then
             HOST_TARGET="${HOST_TARGET}:${FTP_PORT}"
@@ -112,9 +112,6 @@ jobs:
           debug 3
           $(if [ "${PROTOCOL}" = "ftps" ]; then echo "set ftp:ssl-force true"; fi)
           $(if [ "${PROTOCOL}" = "ftps" ]; then echo "set ftp:ssl-protect-data true"; fi)
-          pwd
-          mkdir -p ${TARGET_DIR}
-          cls -la ${TARGET_DIR}
           mirror -R --delete --verbose .output/public/ ${TARGET_DIR}
           bye
           EOF

@@ -2,7 +2,7 @@
   <section ref="sectionEl" class="work-selector" aria-label="Selected work">
     <div class="selector-top">
       <p ref="hintEl" class="selector-hint mono">
-        <span v-if="state === 'idle'">Choisis un projet</span>
+        <span v-if="state === 'idle'">Choisissez un projet</span>
         <span v-else-if="state === 'spinning'"></span>
         <span v-else-if="selectedCategory">{{ activeCategoryLabel }}</span>
       </p>
@@ -361,18 +361,25 @@ async function chooseCategory(categoryKey: CategoryKey) {
 }
 
 function revealProjects() {
-  gsap.fromTo(getProjectCards(), {
+  const cards = getProjectCards()
+
+  gsap.fromTo(cards, {
     autoAlpha: 0,
     visibility: 'hidden',
-    filter: 'blur(18px)'
+    filter: 'blur(18px)',
+    y: 10
   }, {
     autoAlpha: 1,
     visibility: 'visible',
     filter: 'blur(0px)',
+    y: 0,
     duration: 0.95,
     stagger: 0.1,
     ease: 'back.out(1.15)',
-    overwrite: true
+    overwrite: true,
+    onComplete: () => {
+      gsap.set(cards, { clearProps: 'transform' })
+    }
   })
 }
 
@@ -561,7 +568,7 @@ onMounted(async () => {
   box-shadow:
     inset 0 1px 0 rgba(236, 228, 211, 0.11),
     0 22px 58px rgba(0, 0, 0, 0.22);
-  color: var(--text-faint);
+  color: rgba(236, 228, 211, 0.55);
   cursor: pointer;
   font-family: var(--font-serif);
   font-size: clamp(18px, 1.65vw, 25px);
@@ -601,7 +608,7 @@ onMounted(async () => {
   background: transparent;
   backdrop-filter: none;
   box-shadow: none;
-  color: rgba(236, 228, 211, 0.46);
+  color: rgba(236, 228, 211, 0.68);
   font-size: clamp(16px, 1.28vw, 21px);
   padding: 3px 0 8px;
 }

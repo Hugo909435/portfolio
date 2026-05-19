@@ -1,0 +1,111 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hostinger-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate static site
+        run: npm run generate
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Validate FTP configuration
+        shell: bash
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_PROTOCOL: ${{ secrets.FTP_PROTOCOL }}
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${FTP_HOST:-}" ]; then
+            echo "Missing required secret: FTP_HOST"
+            exit 1
+          fi
+
+          if [ -z "${FTP_USERNAME:-}" ]; then
+            echo "Missing required secret: FTP_USERNAME"
+            exit 1
+          fi
+
+          if [ -z "${FTP_PASSWORD:-}" ]; then
+            echo "Missing required secret: FTP_PASSWORD"
+            exit 1
+          fi
+
+          if [[ "$FTP_HOST" == *"://"* ]]; then
+            echo "FTP_HOST must contain only the hostname, for example ftp.example.com"
+            exit 1
+          fi
+
+          if [[ "$FTP_HOST" == */* ]]; then
+            echo "FTP_HOST must not contain a path. Put the remote path in REMOTE_DIR instead."
+            exit 1
+          fi
+
+          if [ -n "${FTP_PROTOCOL:-}" ] && [ "$FTP_PROTOCOL" != "ftp" ] && [ "$FTP_PROTOCOL" != "ftps" ]; then
+            echo "FTP_PROTOCOL must be either ftp or ftps when provided."
+            exit 1
+          fi
+
+          if [ -n "${FTP_PORT:-}" ] && ! [[ "$FTP_PORT" =~ ^[0-9]+$ ]]; then
+            echo "FTP_PORT must be numeric when provided."
+            exit 1
+          fi
+
+      - name: Deploy .output/public to Hostinger
+        shell: bash
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_PROTOCOL: ${{ secrets.FTP_PROTOCOL }}
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+        run: |
+          set -euo pipefail
+
+          PROTOCOL="${FTP_PROTOCOL:-ftp}"
+          PORT_ARG=""
+          TARGET_DIR="${REMOTE_DIR:-/public_html}"
+
+          if [ -n "${FTP_PORT:-}" ]; then
+            PORT_ARG="set ftp:port ${FTP_PORT};"
+          fi
+
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "${PROTOCOL}://${FTP_HOST}" <<EOF
+          set ssl:verify-certificate no
+          set net:max-retries 2
+          set net:timeout 20
+          set xfer:clobber on
+          ${PORT_ARG}
+          mirror -R --delete --verbose .output/public/ ${TARGET_DIR}
+          bye
+          EOF

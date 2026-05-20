@@ -23,6 +23,7 @@
           {{ category.label }}
         </button>
       </div>
+
     </div>
 
     <div ref="projectGridEl" class="project-grid" :class="{ visible: state === 'revealed' }" aria-label="Projects">
@@ -117,12 +118,52 @@
       <button class="g-detail-back mono" @click="closeDetail">← Retour</button>
       <div class="g-detail-body">
         <p class="g-detail-eyebrow mono">{{ detailProject?.role }} · {{ detailProject?.year }}</p>
-        <h2 class="g-detail-title serif">{{ detailProject?.title }}</h2>
+        <div class="g-detail-header">
+          <h2 class="g-detail-title serif">{{ detailProject?.title }}</h2>
+          <button 
+            class="g-detail-gallery-btn" 
+            title="Voir les photos"
+            @click="toggleGallery"
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="gallery-icon">
+              <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8.5 10C9.32843 10 10 9.32843 10 8.5C10 7.67157 9.32843 7 8.5 7C7.67157 7 7 7.67157 7 8.5C7 9.32843 7.67157 10 8.5 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div v-if="showGallery" class="g-detail-gallery">
+          <div v-if="detailProject?.images && detailProject.images.length > 0" class="gallery-grid">
+            <img 
+              v-for="img in detailProject.images" 
+              :key="img" 
+              :src="img" 
+              class="gallery-img"
+              alt="Project screenshot"
+            />
+          </div>
+          <p v-else class="gallery-empty mono">Aucune photo disponible</p>
+        </div>
+
         <p class="g-detail-desc">{{ detailProject?.longDesc }}</p>
         <div class="g-detail-tags">
           <span v-for="tag in detailProject?.tags" :key="tag" class="g-detail-tag mono">{{ tag }}</span>
         </div>
-        <a v-if="detailProject?.link" :href="detailProject.link" target="_blank" rel="noopener" class="g-detail-link mono">
+        
+        <div v-if="detailProject?.links" class="g-detail-links">
+          <a 
+            v-for="link in detailProject.links" 
+            :key="link.url" 
+            :href="link.url" 
+            target="_blank" 
+            rel="noopener" 
+            class="g-detail-link mono"
+          >
+            {{ link.label }} →
+          </a>
+        </div>
+        <a v-else-if="detailProject?.link" :href="detailProject.link" target="_blank" rel="noopener" class="g-detail-link mono">
           Voir le projet →
         </a>
       </div>
@@ -191,6 +232,7 @@ const compassViewportEl = ref<HTMLElement | null>(null)
 const curtainEl = ref<HTMLElement | null>(null)
 const detailPanelEl = ref<HTMLElement | null>(null)
 const detailProject = ref<Project | null>(null)
+const showGallery = ref(false)
 
 let isTransitioning = false
 let storedRect = { left: 0, top: 0, width: 0, height: 0, right: 0 }
@@ -304,14 +346,29 @@ async function chooseCategory(categoryKey: CategoryKey) {
 
   // 3. If we were already showing projects, fade them out first
   if (!wasIdle && currentCards.length > 0) {
-    await gsap.to(currentCards, {
-      autoAlpha: 0,
-      filter: 'blur(14px)',
-      duration: 0.3,
-      stagger: { each: 0.02, from: 'end' },
-      ease: 'power2.in',
-      overwrite: true
-    })
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 640
+    if (isMobile) {
+      await gsap.to(currentCards, {
+        autoAlpha: 0,
+        x: -80,
+        rotation: -20,
+        scale: 0.8,
+        filter: 'blur(10px)',
+        duration: 0.4,
+        stagger: 0.06,
+        ease: 'power2.in',
+        overwrite: true
+      })
+    } else {
+      await gsap.to(currentCards, {
+        autoAlpha: 0,
+        filter: 'blur(14px)',
+        duration: 0.3,
+        stagger: { each: 0.02, from: 'end' },
+        ease: 'power2.in',
+        overwrite: true
+      })
+    }
   }
 
   // 4. Update the category data now that everything is hidden
@@ -319,7 +376,11 @@ async function chooseCategory(categoryKey: CategoryKey) {
   await nextTick()
 
   // 5. Ensure the new project cards are invisible before starting the search animation
-  gsap.set(getProjectCards(), { autoAlpha: 0, filter: 'blur(18px)', visibility: 'hidden' })
+  gsap.set(getProjectCards(), { 
+    autoAlpha: 0, 
+    filter: typeof window !== 'undefined' && window.innerWidth <= 640 ? 'none' : 'blur(18px)', 
+    visibility: 'hidden' 
+  })
   
   gsap.to(categoryZoneEl.value, {
     autoAlpha: 0,
@@ -345,9 +406,21 @@ async function chooseCategory(categoryKey: CategoryKey) {
     ease: 'expo.out',
     overwrite: true
   })
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 640
+  const spinDuration = isMobile ? 2.2 : SPIN_DURATION
+  const rotorTurns = isMobile ? (2 + Math.random() * 0.8) : (5 + Math.random() * 1.5)
+  
+  // 6. Spin the entire compass body and the internal rotor
+  gsap.to(diskWrapEl.value, {
+    rotation: '+=360',
+    duration: spinDuration,
+    ease: 'power3.inOut',
+    overwrite: true
+  })
+
   gsap.to(rotorEl.value, {
-    rotation: 360 * (6 + Math.random() * 1.2),
-    duration: SPIN_DURATION,
+    rotation: `+=${360 * rotorTurns}`,
+    duration: spinDuration,
     ease: 'power3.inOut',
     overwrite: true,
     onComplete: async () => {
@@ -362,23 +435,50 @@ async function chooseCategory(categoryKey: CategoryKey) {
 
 function revealProjects() {
   const cards = getProjectCards()
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 640
+
+  if (isMobile) {
+    if (!cards.length) return
+
+    gsap.set(cards, { 
+      x: 0,
+      autoAlpha: 0, 
+      scale: 0.9, 
+      filter: 'blur(10px)',
+      visibility: 'visible'
+    })
+
+    gsap.to(cards, {
+      autoAlpha: 1,
+      scale: 1,
+      filter: 'blur(0px)',
+      duration: 0.8,
+      stagger: 0.12, // Apparaissent petit à petit
+      ease: 'power2.out',
+      overwrite: true
+    })
+
+    return
+  }
 
   gsap.fromTo(cards, {
     autoAlpha: 0,
     visibility: 'hidden',
     filter: 'blur(18px)',
-    y: 10
+    y: 20 // Commence un peu plus bas pour l'effet d'élévation
   }, {
     autoAlpha: 1,
     visibility: 'visible',
     filter: 'blur(0px)',
     y: 0,
-    duration: 0.95,
-    stagger: 0.1,
-    ease: 'back.out(1.15)',
+    duration: 1.1,
+    stagger: 0.15, // Apparaissent petit à petit
+    ease: 'expo.out',
     overwrite: true,
     onComplete: () => {
-      gsap.set(cards, { clearProps: 'transform' })
+      // On ne nettoie pas le transform pour garder le positionnement en arc
+      // mais on s'assure que l'opacité/visibilité sont fixées
+      gsap.set(cards, { clearProps: 'filter' })
     }
   })
 }
@@ -399,9 +499,21 @@ function revealCompactCategories() {
 }
 
 function openProjectDetail(project: Project) {
-  if (isTransitioning || !diskWrapEl.value || !compassViewportEl.value || !curtainEl.value || !detailPanelEl.value) return
+  if (isTransitioning || !detailPanelEl.value) return
   isTransitioning = true
   detailProject.value = project
+  showGallery.value = false
+
+  // Mobile : animation simple, pas de rolling boussole
+  if (typeof window !== 'undefined' && window.innerWidth <= 640) {
+    gsap.fromTo(detailPanelEl.value,
+      { autoAlpha: 0, y: 28 },
+      { autoAlpha: 1, y: 0, duration: 0.38, ease: 'power2.out', onComplete: () => { isTransitioning = false } }
+    )
+    return
+  }
+
+  if (!diskWrapEl.value || !compassViewportEl.value || !curtainEl.value) return
 
   const rect = diskWrapEl.value.getBoundingClientRect()
   storedRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height, right: rect.right }
@@ -466,9 +578,32 @@ function openProjectDetail(project: Project) {
   )
 }
 
+function toggleGallery() {
+  showGallery.value = !showGallery.value
+}
+
 function closeDetail() {
-  if (isTransitioning || !diskWrapEl.value || !compassViewportEl.value || !curtainEl.value || !detailPanelEl.value) return
+  if (isTransitioning || !detailPanelEl.value) return
   isTransitioning = true
+  showGallery.value = false
+
+  // Mobile : retour simple
+  if (typeof window !== 'undefined' && window.innerWidth <= 640) {
+    gsap.to(detailPanelEl.value, {
+      autoAlpha: 0,
+      y: 20,
+      duration: 0.28,
+      ease: 'power2.in',
+      onComplete: () => {
+        detailProject.value = null
+        isTransitioning = false
+        nextTick().then(() => revealProjects())
+      }
+    })
+    return
+  }
+
+  if (!diskWrapEl.value || !compassViewportEl.value || !curtainEl.value) return
 
   const tl = gsap.timeline({
     onComplete: () => {
@@ -678,10 +813,18 @@ onMounted(async () => {
   opacity: 0;
   visibility: hidden;
   transition:
-    border-color 0.65s var(--ease-out),
-    box-shadow 0.65s var(--ease-out),
-    transform 0.65s var(--ease-out);
+    border-color 0.8s var(--ease-out),
+    box-shadow 0.8s var(--ease-out);
   will-change: filter, opacity, transform;
+}
+
+@media (hover: hover) {
+  .project-card {
+    transition:
+      border-color 0.8s var(--ease-out),
+      box-shadow 0.8s var(--ease-out),
+      transform 0.8s var(--ease-out);
+  }
 }
 
 .project-card::before {
@@ -697,8 +840,8 @@ onMounted(async () => {
   border-color: rgba(198, 151, 105, 0.58);
   box-shadow:
     inset 0 1px 0 rgba(236, 228, 211, 0.15),
-    0 34px 90px rgba(0, 0, 0, 0.34);
-  transform: translateY(-12px);
+    0 42px 100px rgba(0, 0, 0, 0.38);
+  transform: translateY(-16px) scale(1.02) rotate(-1deg);
 }
 
 .project-meta,
@@ -1152,6 +1295,189 @@ onMounted(async () => {
     width: min(620px, 120vw);
   }
 }
+
+/* ── Mobile complet (≤ 640px) ── */
+
+@media (max-width: 640px) {
+  /* Flex colonne qui remplit le work-stage */
+  .work-selector {
+    height: 100%;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .selector-top {
+    position: static;
+    flex: 0 0 auto;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px 6px;
+    text-align: center;
+  }
+
+  .selector-hint {
+    display: none;
+  }
+
+  /* Catégories en ligne scrollable */
+  .category-zone {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 2px 4px 4px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .category-zone::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Pills premium — mono, pill shape */
+  .cat {
+    min-width: 0;
+    white-space: nowrap;
+    padding: 7px 16px 8px;
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 100px;
+    border: 1px solid rgba(198, 151, 105, 0.18);
+    background: rgba(20, 18, 16, 0.6);
+    backdrop-filter: blur(10px);
+    color: rgba(236, 228, 211, 0.46);
+    transform: none;
+    transition: border-color 0.22s, color 0.22s, background 0.22s, transform 0.12s;
+    box-shadow: inset 0 1px 0 rgba(236, 228, 211, 0.06);
+  }
+
+  .cat:active {
+    transform: scale(0.96);
+  }
+
+  .cat.active {
+    border-color: rgba(198, 151, 105, 0.55);
+    color: var(--accent);
+    background: rgba(198, 151, 105, 0.09);
+  }
+
+  .cat:hover:not(.active) {
+    border-color: rgba(198, 151, 105, 0.32);
+    color: rgba(236, 228, 211, 0.72);
+  }
+
+  /* Compact (après première sélection) */
+  .category-zone.compact .cat {
+    font-size: 9px;
+    padding: 4px 12px 5px;
+    letter-spacing: 0.08em;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(198, 151, 105, 0.1);
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .category-zone.compact .cat.active {
+    border-bottom-color: rgba(198, 151, 105, 0.55);
+    background: transparent;
+  }
+
+  /* Cartes en arc autour de la boussole */
+  .project-grid {
+    position: absolute !important;
+    bottom: clamp(215px, 56vw, 255px) !important;
+    left: 50% !important;
+    top: auto !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(440px, 96vw) !important;
+    height: clamp(170px, 44vw, 200px) !important;
+    display: block !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Slots : garder le positionnement absolu en arc */
+  .project-slot {
+    width: clamp(108px, 28vw, 128px) !important;
+  }
+
+  /* Cartes plus petites — visibilité gérée par GSAP */
+  .project-card {
+    min-height: 76px;
+    padding: 10px;
+  }
+
+  .project-title {
+    font-size: clamp(15px, 4vw, 18px);
+    margin-top: 5px;
+  }
+
+  .project-desc {
+    display: none;
+  }
+
+  .project-meta,
+  .project-tech {
+    font-size: 7px;
+  }
+
+  /* Boussole en bas : seule la moitié haute visible */
+  .compass-viewport {
+    position: relative;
+    inset: auto;
+    flex: 0 0 clamp(185px, 52vw, 215px);
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .compass-viewport::before {
+    display: none;
+  }
+
+  .compass-viewport::after {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 52px;
+    background: linear-gradient(to bottom, transparent, var(--bg));
+    content: "";
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Disk large, positionné depuis le haut */
+  .disk-wrap {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    width: min(440px, 96vw);
+    transform: translateX(-50%);
+  }
+}
 </style>
 
 <style>
@@ -1179,6 +1505,30 @@ onMounted(async () => {
   opacity: 0;
   visibility: hidden;
   pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+  .g-detail {
+    left: 0;
+    background: var(--bg);
+    padding: 80px 24px 48px;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  .g-detail-title {
+    font-size: clamp(42px, 11vw, 68px);
+    margin-bottom: 18px;
+  }
+
+  .g-detail-desc {
+    font-size: 15px;
+    margin-bottom: 22px;
+  }
+
+  .g-detail-back {
+    margin-bottom: 28px;
+  }
 }
 
 .g-detail-back {
@@ -1252,5 +1602,88 @@ onMounted(async () => {
 
 .g-detail-link:hover {
   opacity: 0.72;
+}
+
+.g-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+/* Gallery Styles */
+.g-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.g-detail-title {
+  margin-bottom: 0; /* Override previous margin */
+}
+
+.g-detail-gallery-btn {
+  background: none;
+  border: 1px solid rgba(198, 151, 105, 0.3);
+  border-radius: 8px;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 8px;
+  transition: all 0.3s var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.g-detail-gallery-btn:hover {
+  background: rgba(198, 151, 105, 0.1);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.gallery-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.g-detail-gallery {
+  margin-bottom: 32px;
+  animation: fadeInGallery 0.5s var(--ease-out);
+}
+
+@keyframes fadeInGallery {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.gallery-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(198, 151, 105, 0.2);
+  transition: transform 0.4s var(--ease-out);
+}
+
+.gallery-img:hover {
+  transform: scale(1.04);
+  border-color: var(--accent);
+}
+
+.gallery-empty {
+  color: var(--text-faint);
+  font-size: 13px;
+  padding: 20px;
+  border: 1px dashed rgba(198, 151, 105, 0.2);
+  border-radius: 8px;
+  text-align: center;
 }
 </style>

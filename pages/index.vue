@@ -11,9 +11,8 @@
         <p class="hero-meta mono">Developer &middot; Vendee &middot; FRANCE &middot; 2026</p>
 
         <div class="hero-title-wrap">
-          <h1 id="hero-title" class="hero-title serif" aria-label="Hello, je suis Hugo Beignon.">
-            <span class="title-line">Hello, je suis</span>
-            <span class="title-line"><span>Hugo Beignon.</span></span>
+          <h1 id="hero-title" class="hero-title serif" aria-label="Hugo Beignon">
+            <span class="title-line"><span>Hugo Beignon</span></span>
           </h1>
         </div>
 
@@ -252,56 +251,141 @@ const aboutOpen = ref(false)
   }
 }
 
-@media (max-width: 640px) {
-  .site-nav {
-    padding: 20px 24px;
-  }
+/* ── Mobile premium — 100svh, boussole intacte ── */
 
-  .nav-links {
-    gap: 20px;
-    max-width: 48vw;
-    overflow: hidden;
-    text-align: right;
-    text-overflow: ellipsis;
-  }
+@keyframes m-hero-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 560px) {
-  .intro-panel,
-  .work-stage {
-    width: min(100%, calc(100vw - 40px));
-    max-width: calc(100vw - 40px);
+@media (max-width: 640px) {
+  .site-nav {
+    padding: 16px 22px;
   }
 
-  .hero-actions {
-    width: min(100%, 320px);
-    align-items: stretch;
+  .home {
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .home-stage {
+    display: flex;
     flex-direction: column;
-    margin-top: 24px;
+    height: 100%;
+    min-height: 0;
+    padding: 52px 0 0;
   }
 
-  .primary-link,
-  .ghost-link {
-    max-width: 100%;
-    width: 100%;
+  /* ── Hero ── */
+  .intro-panel {
+    flex: 0 0 auto;
+    min-height: 0;
+    justify-content: flex-start;
+    padding: 18px 26px 12px;
+    align-items: flex-start;
+    text-align: left;
+    position: relative;
+  }
+
+  /* Halo atmosphérique derrière le titre */
+  .intro-panel::before {
+    content: '';
+    position: absolute;
+    top: -24px;
+    left: -32px;
+    width: 280px;
+    height: 220px;
+    background: radial-gradient(ellipse at 22% 38%, rgba(198, 151, 105, 0.09) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Ligne décorative sous la nav */
+  .site-nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 22px;
+    right: 22px;
+    height: 1px;
+    background: linear-gradient(to right, rgba(198,151,105,0.18), transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-meta {
+    font-size: 9px;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    animation: m-hero-in 0.45s ease both;
+    animation-delay: 0.04s;
   }
 
   .hero-title-wrap {
-    margin-top: 18px;
+    margin-top: 10px;
+    animation: m-hero-in 0.52s ease both;
+    animation-delay: 0.17s;
   }
 
   .hero-title {
     max-width: none;
-    font-size: clamp(50px, 15vw, 60px);
+    font-size: clamp(44px, 11.5vw, 54px);
+    line-height: 0.91;
   }
 
   .hero-lead {
-    width: min(100%, 320px);
-    max-width: calc(100vw - 72px);
-    margin-top: 20px;
-    font-size: 16px;
-    line-height: 1.45;
-    overflow-wrap: anywhere;
+    max-width: 100%;
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.62;
+    color: rgba(236, 228, 211, 0.54);
+    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: normal;
+    animation: m-hero-in 0.5s ease both;
+    animation-delay: 0.29s;
+  }
+
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-top: 16px;
+    width: auto;
+    align-items: center;
+    justify-content: flex-start;
+    animation: m-hero-in 0.45s ease both;
+    animation-delay: 0.41s;
+  }
+
+  .primary-link,
+  .ghost-link {
+    min-height: 40px;
+    max-width: none;
+    width: auto;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .primary-link {
+    border-color: rgba(198, 151, 105, 0.65);
+    background: rgba(198, 151, 105, 0.12);
+  }
+
+  .ghost-link {
+    border-color: rgba(236, 228, 211, 0.18);
+  }
+
+  .work-stage {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
   }
 }
 </style>

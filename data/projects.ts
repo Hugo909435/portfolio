@@ -8,6 +8,8 @@ export type Project = {
   longDesc: string
   tags: string[]
   link?: string
+  links?: { label: string; url: string }[]
+  images?: string[]
 }
 
 export const categories = [
@@ -22,45 +24,50 @@ export const projectsByCategory: Record<string, Project[]> = {
       slug: 'incidents-manager',
       title: 'Incidents Manager',
       year: '2025',
-      meta: 'Laravel - PrestaShop',
-      desc: "Workflow d'incidents pour l'equipe support.",
-      role: 'Développeur Backend',
+      meta: 'Laravel - Brevo - MySQL',
+      desc: "Gestion d'incidents et base de connaissances.",
+      role: 'Concepteur & Développeur',
       longDesc:
-        "Système de ticketing interne développé pour centraliser et prioriser les incidents remontés par l'équipe support e-commerce. Les agents peuvent créer, commenter et escalader des incidents directement depuis leur interface PrestaShop. Un tableau de bord temps réel permet au manager de suivre les SLA et d'identifier les zones de friction récurrentes.",
-      tags: ['Laravel', 'PrestaShop', 'MySQL', 'PHP 8', 'Livewire']
+        "Solution de ticketing utilisée par l'ensemble de l'équipe pour transmettre des demandes ou signaler des problèmes aux responsables des projets web. L'application intègre une messagerie par ticket, des notifications par mail via Brevo pour chaque nouvel incident, et une gestion fine des rôles (utilisateurs/administrateurs). Au-delà du ticketing, elle sert de base de connaissances centralisant fiches techniques et solutions post-incidents.",
+      tags: ['Laravel', 'Brevo', 'MySQL', 'PHP 8', 'Livewire', 'Ticketing'],
+      images: [
+        '/portfolio-gogo-home.png',
+        '/portfolio-gogo-work-selector.png'
+      ]
     },
     {
-      slug: 'site-monitoring',
-      title: 'Site Monitoring',
+      slug: 'projet-monitoring',
+      title: 'Projet Monitoring',
       year: '2024',
-      meta: 'PHP - Brevo',
+      meta: 'PHP - Brevo - Hostinger',
       desc: 'Alertes automatiques sur downtime.',
-      role: 'Développeur Solo',
+      role: 'Concepteur & Développeur',
       longDesc:
-        "Script de surveillance autonome qui interroge une liste de sites toutes les cinq minutes via cURL. En cas d'indisponibilité détectée, une alerte transactionnelle est envoyée par Brevo avec le code HTTP, le temps de réponse et un historique des incidents récents. Le tout tourne en CRON sur un VPS mutualisé, sans dépendance externe.",
-      tags: ['PHP', 'Brevo API', 'cURL', 'CRON', 'VPS']
+        "Script de surveillance autonome qui interroge une liste de sites toutes les 30 minutes. En cas d'indisponibilité détectée, un mail et un SMS sont envoyés via Brevo. Une notification est également envoyée lorsque les sites sont de nouveau en ligne. Le tout tourne en CRON sur Hostinger, sans dépendance externe.",
+      tags: ['PHP', 'Brevo API', 'CRON', 'Hostinger', 'SMS']
     },
     {
-      slug: 'promo-sql',
-      title: 'Promo SQL Auto',
+      slug: 'doviris-lams',
+      title: 'Prestashop',
+      year: '2025 - 2026',
+      meta: 'PrestaShop - International',
+      desc: 'Gestion multi-boutique et maintenance.',
+      role: 'Concepteur & Développeur',
+      longDesc:
+        "Gestion et maintenance de l'écosystème PrestaShop chez Doviris pour la marque de serres de jardin LAMS. Mon travail inclut la maintenance corrective et évolutive, l'ajout de nouvelles fonctionnalités et le déploiement de boutiques indépendantes pour l'international. Chaque marché dispose de sa propre instance dédiée : France, Belgique, Suisse, Allemagne, Espagne et Italie.",
+      tags: ['PrestaShop', 'International', 'Doviris', 'LAMS', 'Multi-boutique'],
+      link: 'https://serres-lams.com'
+    },
+    {
+      slug: 'optitime',
+      title: 'Optitime',
       year: '2024',
-      meta: 'MySQL - PrestaShop',
-      desc: 'Generation automatique de promos saisonnieres.',
-      role: 'Développeur SQL',
+      meta: 'Laravel - API - O2Switch',
+      desc: "Gestion d'activités scolaires multi-rôles.",
+      role: 'Concepteur & Développeur',
       longDesc:
-        "Procédures stockées MySQL qui génèrent automatiquement des règles de promotion saisonnières dans PrestaShop en fonction d'un calendrier paramétrable. Réduit à zéro le travail manuel de création des offres (soldes, Black Friday, fêtes). Les règles respectent les structures internes de PrestaShop et s'activent / se désactivent sans intervention humaine.",
-      tags: ['MySQL', 'PrestaShop', 'Procédures stockées', 'Automatisation']
-    },
-    {
-      slug: 'catalog-restructure',
-      title: 'Catalog Restructure',
-      year: '2025',
-      meta: 'SEO - Redirects',
-      desc: '200+ URLs migrees sans perte de referencement.',
-      role: 'Tech Lead SEO',
-      longDesc:
-        "Refonte de l'arborescence produit d'un catalogue e-commerce de 200+ références, pilotée par une analyse SEO préalable. Chaque ancienne URL a été mappée vers sa nouvelle destination via un fichier de redirections 301 généré automatiquement. Zéro perte de trafic organique mesurée à 90 jours post-migration. La nouvelle structure réduit la profondeur d'indexation de 4 niveaux à 2.",
-      tags: ['SEO', 'Nginx', 'CSV', 'PrestaShop', 'Google Search Console']
+        "Projet réalisé en duo lors d'un stage de deuxième année de BTS au Lycée Sainte-Marie du Port (Les Sables-d'Olonne). Optitime est une application interne permettant la gestion des activités pour les élèves et les professeurs. L'architecture repose sur deux instances Laravel distinctes (une API et un Front), déployées sur O2Switch. Le système gère quatre interfaces dédiées selon les rôles : Administrateur, Vie Scolaire, Élève et Professeur.",
+      tags: ['Laravel', 'API REST', 'O2Switch', 'MySQL', 'BTS SIO', 'Travail en duo']
     }
   ],
   perso: [
@@ -87,26 +94,31 @@ export const projectsByCategory: Record<string, Project[]> = {
       tags: ['Vue 3', 'Nuxt', 'Groq AI', 'TypeScript', 'Pinia', 'LLaMA 3']
     },
     {
-      slug: 'pokemon-tcg',
-      title: 'Pokemon TCG',
+      slug: 'mam-les-ptits-cocoons',
+      title: "MAM Les P'tits Cocoons",
       year: '2024',
-      meta: 'React',
-      desc: "Simulateur d'ouverture de booster.",
-      role: 'Développeur Frontend',
+      meta: 'Site Vitrine - SEO - Google Ads',
+      desc: "Site vitrine pour une Maison d'Assistantes Maternelles.",
+      role: 'Développeur & SEO',
       longDesc:
-        "Simulateur d'ouverture de boosters Pokémon en React, avec animations de révélation carte par carte fidèles au jeu physique. Les données de cartes sont récupérées depuis l'API officielle Pokémon TCG. L'utilisateur choisit une extension, ouvre un booster, découvre ses cartes avec des animations CSS et peut consulter l'historique de ses ouvertures. Projet réalisé en un weekend.",
-      tags: ['React', 'Pokémon TCG API', 'CSS Animations', 'TypeScript']
+        "Création complète d'un site vitrine pour une Maison d'Assistantes Maternelles (MAM). Le projet inclut un formulaire de contact fonctionnel, une optimisation SEO poussée pour le référencement local, ainsi que la mise en place et la gestion de la fiche Google Business et de campagnes Google Ads pour booster la visibilité.",
+      tags: ['SEO local', 'Google Ads', 'Google Business', 'Site Vitrine', 'Marketing'],
+      link: 'https://mamlesptitscocoons.com/'
     },
     {
-      slug: 'freelance-connect',
-      title: 'FreelanceConnect',
-      year: '2024',
-      meta: 'Laravel - AdminLTE',
-      desc: 'Plateforme freelance / client.',
-      role: 'Développeur Fullstack',
+      slug: 'projet-marketing',
+      title: 'Projet Marketing',
+      year: '2025',
+      meta: 'SEO - GEO - Marketing',
+      desc: 'Exploration du référencement et acquisition.',
+      role: 'Marketing & SEO',
       longDesc:
-        "Plateforme de mise en relation entre freelances et clients, développée dans le cadre d'une exploration de Laravel. Les freelances peuvent créer des profils, publier des services et recevoir des demandes de devis. Les clients parcourent les offres et contactent les prestataires via un système de messagerie intégré. Le backoffice AdminLTE permet à l'admin de modérer les profils et les offres.",
-      tags: ['Laravel', 'AdminLTE', 'MySQL', 'Bootstrap 5', 'Blade']
+        "Découverte d'une passion pour le marketing digital lors de mon alternance chez Doviris. Pour approfondir mes compétences, j'ai lancé deux projets centrés sur l'optimisation SEO (Search Engine Optimization) et GEO (Generative Engine Optimization). L'objectif est de comprendre les mécanismes d'acquisition de trafic et de visibilité sur les moteurs de recherche modernes.",
+      tags: ['SEO', 'GEO', 'Marketing Digital', 'Acquisition'],
+      links: [
+        { label: 'mon-carburant.com', url: 'https://mon-carburant.com' },
+        { label: 'ilovegta6.com', url: 'https://ilovegta6.com' }
+      ]
     }
   ],
   ecole: [
@@ -122,15 +134,15 @@ export const projectsByCategory: Record<string, Project[]> = {
       tags: ['Java 17', 'Spring Boot', 'Spring Security', 'JPA', 'JWT', 'Swagger']
     },
     {
-      slug: 'hr-postgres',
-      title: 'HR Postgres',
+      slug: 'pokemon-tcg',
+      title: 'Pokemon TCG',
       year: '2024',
-      meta: 'PostgreSQL',
-      desc: 'Gestion RH normalisee 3NF.',
-      role: 'Modélisation BDD',
+      meta: 'React',
+      desc: "Simulateur d'ouverture de booster.",
+      role: 'Développeur Frontend',
       longDesc:
-        "Base de données relationnelle de gestion RH conçue en troisième forme normale (3NF). Couvre les entités Employés, Contrats, Départements, Congés et Paie. Inclut des vues métier, des triggers d'audit automatique et des procédures stockées PL/pgSQL pour les calculs de paie. Le schéma gère les historiques de poste sans perte d'information. Documentation ERD complète.",
-      tags: ['PostgreSQL', '3NF', 'PL/pgSQL', 'Triggers', 'ERD', 'SQL']
+        "Simulateur d'ouverture de boosters Pokémon en React, avec animations de révélation carte par carte fidèles au jeu physique. Les données de cartes sont récupérées depuis l'API officielle Pokémon TCG. L'utilisateur choisit une extension, ouvre un booster, découvre ses cartes avec des animations CSS et peut consulter l'historique de ses ouvertures.",
+      tags: ['React', 'Pokémon TCG API', 'CSS Animations', 'TypeScript']
     },
     {
       slug: 'debian-lab',
@@ -142,6 +154,17 @@ export const projectsByCategory: Record<string, Project[]> = {
       longDesc:
         "Pipeline de provisioning automatisé pour créer des images VM Debian 12 reproducibles via Packer et HCL2. Le template configure le partitionnement, l'utilisateur système, les paquets de base et le SSH en mode non-interactif (preseed). Les images générées sont compatibles VirtualBox et QEMU. Le projet inclut un script de validation post-build qui vérifie la conformité de l'image via SSH.",
       tags: ['Packer', 'HCL2', 'Debian 12', 'QEMU', 'Bash', 'Preseed']
+    },
+    {
+      slug: 'rocroccar',
+      title: 'RocRocCar',
+      year: '2024',
+      meta: 'React Native - Expo - Google Maps',
+      desc: 'Application mobile de covoiturage.',
+      role: 'Développeur Mobile',
+      longDesc:
+        "Application mobile de covoiturage inspirée de BlaBlaCar, développée en React Native. L'application intègre l'API Google Maps pour la visualisation des trajets et la sélection des points de départ et d'arrivée. Le projet a été déployé et testé en local via Expo Go.",
+      tags: ['React Native', 'Expo', 'Google Maps API', 'Mobile', 'JavaScript']
     }
   ]
 }

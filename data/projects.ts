@@ -165,6 +165,86 @@ export const projectsByCategory: Record<string, Project[]> = {
       longDesc:
         "Application mobile de covoiturage inspirée de BlaBlaCar, développée en React Native. L'application intègre l'API Google Maps pour la visualisation des trajets et la sélection des points de départ et d'arrivée. Le projet a été déployé et testé en local via Expo Go.",
       tags: ['React Native', 'Expo', 'Google Maps API', 'Mobile', 'JavaScript']
+    },
+    {
+      slug: 'eco-tracker',
+      title: 'Eco Tracker',
+      year: '2024',
+      meta: 'Vue 3 - Chart.js',
+      desc: 'Suivi de consommation énergétique.',
+      role: 'Développeur Frontend',
+      longDesc: "Tableau de bord permettant de suivre sa consommation d'eau et d'électricité. Visualisation via des graphiques interactifs et conseils personnalisés pour réduire son empreinte.",
+      tags: ['Vue 3', 'Chart.js', 'Vite', 'CSS Grid']
+    },
+    {
+      slug: 'task-master',
+      title: 'Task Master',
+      year: '2023',
+      meta: 'Node.js - MongoDB',
+      desc: 'Gestionnaire de tâches collaboratif.',
+      role: 'Backend Developer',
+      longDesc: "API robuste gérant des listes de tâches partagées avec notifications en temps réel via WebSockets.",
+      tags: ['Node.js', 'Express', 'MongoDB', 'Socket.io']
+    },
+    {
+      slug: 'portfolio-v1',
+      title: 'Portfolio v1',
+      year: '2023',
+      meta: 'HTML - CSS - JS',
+      desc: 'Première itération de mon portfolio.',
+      role: 'Designer & Développeur',
+      longDesc: "Mon tout premier portfolio en ligne, explorant les animations CSS de base et le design responsive.",
+      tags: ['HTML5', 'CSS3', 'JavaScript', 'Responsive Design']
+    },
+    {
+      slug: 'smart-garden',
+      title: 'Smart Garden',
+      year: '2024',
+      meta: 'Python - Raspberry Pi',
+      desc: 'Arrosage automatique connecté.',
+      role: 'Développeur IoT',
+      longDesc: "Système d'arrosage automatique contrôlé par un Raspberry Pi, avec interface web pour surveiller l'humidité du sol.",
+      tags: ['Python', 'IoT', 'Raspberry Pi', 'Flask']
+    },
+    {
+      slug: 'crypto-watch',
+      title: 'Crypto Watch',
+      year: '2024',
+      meta: 'Swift - SwiftUI',
+      desc: 'Widget de suivi de crypto-monnaies.',
+      role: 'Développeur iOS',
+      longDesc: "Application iOS et widget pour suivre les cours des crypto-monnaies en temps réel via l'API CoinGecko.",
+      tags: ['Swift', 'SwiftUI', 'iOS', 'API REST']
+    },
+    {
+      slug: 'fitness-pro',
+      title: 'Fitness Pro',
+      year: '2023',
+      meta: 'Flutter - Firebase',
+      desc: 'Suivi de séances de musculation.',
+      role: 'Développeur Mobile',
+      longDesc: "Application mobile pour enregistrer ses séances de sport, visualiser ses progrès et partager ses routines.",
+      tags: ['Flutter', 'Firebase', 'Mobile', 'Dart']
+    },
+    {
+      slug: 'recipe-finder',
+      title: 'Recipe Finder',
+      year: '2023',
+      meta: 'React - Edamam API',
+      desc: 'Recherche de recettes par ingrédients.',
+      role: 'Frontend Developer',
+      longDesc: "Application React utilisant l'API Edamam pour trouver des recettes basées sur les ingrédients saisis par l'utilisateur.",
+      tags: ['React', 'API', 'CSS Modules', 'JavaScript']
+    },
+    {
+      slug: 'chat-app',
+      title: 'Secure Chat',
+      year: '2024',
+      meta: 'Go - React',
+      desc: 'Messagerie instantanée chiffrée.',
+      role: 'Fullstack Developer',
+      longDesc: "Application de messagerie avec chiffrement de bout en bout, utilisant Go pour le backend performant et React pour le client.",
+      tags: ['Go', 'React', 'WebSockets', 'Cryptography']
     }
   ]
 }

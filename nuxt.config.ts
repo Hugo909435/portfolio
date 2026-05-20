@@ -5,6 +5,15 @@ export default defineNuxtConfig({
   experimental: {
     appManifest: false
   },
+  app: {
+    head: {
+      title: 'Hugo Beignon — Portfolio',
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/img/logos/transparent-logo.svg' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ]
+    }
+  },
   modules: ['@nuxtjs/google-fonts'],
   css: ['~/assets/css/main.css'],
   googleFonts: {

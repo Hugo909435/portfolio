@@ -1,28 +1,41 @@
 <template>
   <main class="home">
     <nav class="site-nav" aria-label="Navigation principale">
-      <div class="nav-links mono" aria-label="Sections du site">
-        <button class="nav-contact-btn" @click="contactOpen = true">contact</button>
-      </div>
+      <a class="brand" href="/" aria-label="Hugo Beignon — Portfolio">
+        <img src="/img/logos/transparent-logo.svg" class="brand-logo" alt="" aria-hidden="true" />
+      </a>
     </nav>
 
     <section class="home-stage" aria-labelledby="hero-title">
       <div class="intro-panel">
-        <p class="hero-meta mono">Developer &middot; Vendee &middot; FRANCE &middot; 2026</p>
+        <p class="hero-meta mono">Vendée &middot; France &middot; 2026</p>
 
         <div class="hero-title-wrap">
           <h1 id="hero-title" class="hero-title serif" aria-label="Hugo Beignon">
-            <span class="title-line"><span>Hugo Beignon</span></span>
+            <span class="title-line"><span>Hugo <span class="title-beignon">Beignon</span></span></span>
           </h1>
         </div>
 
         <p class="hero-lead">
-          Je construis des interfaces, des outils metier et des experiences web qui restent lisibles meme quand la logique devient dense.
+          Je conçois des interfaces précises, des outils métier sur mesure et des expériences web soignées. Ce portfolio me permet à la fois de présenter mes projets et d'explorer un langage visuel plus personnel.
         </p>
+
+        <div class="hero-disciplines mono" aria-label="Disciplines">
+          <span>Full-Stack</span>
+          <span class="hero-disc-sep" aria-hidden="true">/</span>
+          <span>UI · UX</span>
+          <span class="hero-disc-sep" aria-hidden="true">/</span>
+          <span>Marketing</span>
+        </div>
 
         <div class="hero-actions">
           <button class="primary-link mono" @click="aboutOpen = true">Qui suis-je →</button>
           <button class="ghost-link mono" @click="contactOpen = true">Contact</button>
+        </div>
+
+        <div class="hero-foot" aria-hidden="true">
+          <span class="hero-foot-label mono">Portfolio personnel</span>
+          <span class="hero-foot-coords mono">46°40'N&nbsp;&nbsp;1°26'O</span>
         </div>
       </div>
 
@@ -68,18 +81,21 @@ const aboutOpen = ref(false)
 }
 
 .brand {
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0;
+  display: inline-flex;
+  align-items: center;
 }
 
-.brand-name {
-  color: var(--accent);
+.brand-logo {
+  display: block;
+  width: 156px;
+  height: 156px;
+  object-fit: contain;
+  transition: opacity 0.25s var(--ease-out);
 }
 
-.brand-ext {
-  color: var(--text-muted);
+.brand:hover .brand-logo,
+.brand:focus-visible .brand-logo {
+  opacity: 0.72;
 }
 
 .nav-links {
@@ -136,6 +152,16 @@ const aboutOpen = ref(false)
   padding-bottom: clamp(48px, 7vh, 86px);
 }
 
+.intro-panel::before {
+  content: '';
+  position: absolute;
+  inset: -30% -20% -20% -30%;
+  background: radial-gradient(ellipse at 38% 42%, rgba(198, 151, 105, 0.11) 0%, rgba(198, 151, 105, 0.04) 40%, transparent 68%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+
 .hero-meta {
   color: var(--text-muted);
 }
@@ -159,13 +185,17 @@ const aboutOpen = ref(false)
   padding-bottom: 0.08em;
 }
 
+.title-beignon {
+  color: #c4956a;
+}
+
 .title-line:nth-child(2) {
   color: var(--accent);
 }
 
 .hero-lead {
   max-width: 520px;
-  margin-top: clamp(28px, 4vh, 44px);
+  margin-top: clamp(44px, 6vh, 68px);
   color: var(--text-muted);
   font-size: clamp(17px, 1.35vw, 21px);
   line-height: 1.55;
@@ -219,11 +249,52 @@ const aboutOpen = ref(false)
   color: var(--text);
 }
 
+.hero-disciplines {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: clamp(18px, 2.2vh, 26px);
+  color: var(--text-faint);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+
+.hero-disc-sep {
+  color: rgba(198, 151, 105, 0.28);
+  font-size: 9px;
+}
+
+.hero-foot {
+  position: absolute;
+  bottom: clamp(24px, 3.5vh, 48px);
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid rgba(198, 151, 105, 0.1);
+}
+
+.hero-foot-label {
+  color: var(--text-faint);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+.hero-foot-coords {
+  color: rgba(198, 151, 105, 0.38);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
 .work-stage {
   position: relative;
   width: 100%;
   min-width: 0;
 }
+
 
 @media (max-width: 980px) {
   .home {
@@ -249,6 +320,10 @@ const aboutOpen = ref(false)
   .work-stage {
     min-height: min(620px, 78vh);
   }
+
+  .hero-foot {
+    display: none;
+  }
 }
 
 /* ── Mobile premium — 100svh, boussole intacte ── */
@@ -261,6 +336,11 @@ const aboutOpen = ref(false)
 @media (max-width: 640px) {
   .site-nav {
     padding: 16px 22px;
+  }
+
+  .brand-logo {
+    width: 78px;
+    height: 78px;
   }
 
   .home {
@@ -281,35 +361,16 @@ const aboutOpen = ref(false)
     flex: 0 0 auto;
     min-height: 0;
     justify-content: flex-start;
-    padding: 18px 26px 12px;
+    padding: 64px 26px 0;
+    margin-bottom: -44px;
     align-items: flex-start;
     text-align: left;
     position: relative;
   }
 
-  /* Halo atmosphérique derrière le titre */
   .intro-panel::before {
-    content: '';
-    position: absolute;
-    top: -24px;
-    left: -32px;
-    width: 280px;
-    height: 220px;
-    background: radial-gradient(ellipse at 22% 38%, rgba(198, 151, 105, 0.09) 0%, transparent 65%);
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  /* Ligne décorative sous la nav */
-  .site-nav::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 22px;
-    right: 22px;
-    height: 1px;
-    background: linear-gradient(to right, rgba(198,151,105,0.18), transparent 60%);
-    pointer-events: none;
+    inset: -40% -10% -10% -40%;
+    background: radial-gradient(ellipse at 40% 38%, rgba(198, 151, 105, 0.10) 0%, rgba(198, 151, 105, 0.03) 42%, transparent 66%);
   }
 
   .hero-meta {
@@ -336,7 +397,7 @@ const aboutOpen = ref(false)
   .hero-lead {
     max-width: 100%;
     margin-top: 12px;
-    font-size: 14px;
+    font-size: 17px;
     line-height: 1.62;
     color: rgba(236, 228, 211, 0.54);
     text-align: left;
@@ -347,6 +408,19 @@ const aboutOpen = ref(false)
     overflow-wrap: normal;
     animation: m-hero-in 0.5s ease both;
     animation-delay: 0.29s;
+  }
+
+  .hero-disciplines {
+    margin-top: 9px;
+    font-size: 9px;
+    letter-spacing: 0.13em;
+    gap: 6px 8px;
+    animation: m-hero-in 0.45s ease both;
+    animation-delay: 0.36s;
+  }
+
+  .hero-foot {
+    display: none;
   }
 
   .hero-actions {

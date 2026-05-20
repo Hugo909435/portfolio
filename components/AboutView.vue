@@ -58,7 +58,7 @@
             </div>
             <div class="stat-sep" />
             <div class="stat-item">
-              <span class="stat-num mono">{{ statLangVal }}<sup>+</sup></span>
+              <span class="stat-num mono">20<sup>+</sup></span>
               <span class="stat-label mono">projets</span>
             </div>
           </div>
@@ -488,23 +488,16 @@ function onLeave(el: Element, done: () => void) {
 .about-content {
   flex: 1;
   max-width: 520px;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
-  padding-right: 8px;
+  overflow-y: visible;
   will-change: opacity, transform;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(198,151,105,0.2) transparent;
 }
-.about-content::-webkit-scrollbar { width: 3px; }
-.about-content::-webkit-scrollbar-track { background: transparent; }
-.about-content::-webkit-scrollbar-thumb { background: rgba(198,151,105,0.22); border-radius: 2px; }
 
 /* ── Header ── */
 .about-header {
   display: flex;
   align-items: center;
   gap: 18px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .about-photo-wrap {
@@ -546,6 +539,15 @@ function onLeave(el: Element, done: () => void) {
 
 .about-header-text { flex: 1; }
 
+.about-logo {
+  display: block;
+  width: 156px;
+  height: 156px;
+  object-fit: contain;
+  margin-bottom: 12px;
+  opacity: 0.65;
+}
+
 .about-eyebrow { margin-bottom: 4px; }
 
 .about-title {
@@ -557,9 +559,9 @@ function onLeave(el: Element, done: () => void) {
 
 .about-lead {
   color: var(--text-muted);
-  font-size: clamp(14px, 1.1vw, 16px);
-  line-height: 1.65;
-  margin-bottom: 22px;
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.6;
+  margin-bottom: 14px;
   max-width: 48ch;
 }
 
@@ -567,11 +569,11 @@ function onLeave(el: Element, done: () => void) {
 .about-stats {
   display: flex;
   align-items: center;
-  padding: 14px 20px;
+  padding: 10px 16px;
   background: rgba(198,151,105,0.04);
   border: 1px solid rgba(198,151,105,0.12);
   border-radius: 10px;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 
 .stat-item {
@@ -589,7 +591,7 @@ function onLeave(el: Element, done: () => void) {
 }
 
 .stat-num {
-  font-size: clamp(22px, 3vw, 32px);
+  font-size: clamp(20px, 2.4vw, 28px);
   color: var(--accent);
   line-height: 1;
 }
@@ -614,7 +616,7 @@ function onLeave(el: Element, done: () => void) {
   background: rgba(198,151,105,0.05);
   border: 1px solid rgba(198,151,105,0.1);
   border-radius: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .tab-btn {
@@ -649,8 +651,8 @@ function onLeave(el: Element, done: () => void) {
 .about-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .about-cards--grid4 {
@@ -658,7 +660,7 @@ function onLeave(el: Element, done: () => void) {
 }
 
 .about-card {
-  padding: 14px 16px;
+  padding: 10px 13px;
   background: rgba(198,151,105,0.03);
   border: 1px solid rgba(198,151,105,0.1);
   border-radius: 10px;
@@ -734,13 +736,13 @@ function onLeave(el: Element, done: () => void) {
 .about-skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 22px;
+  gap: 5px;
+  margin-bottom: 14px;
 }
 
 .skill-pill {
-  font-size: 11px;
-  padding: 5px 13px;
+  font-size: 10px;
+  padding: 4px 11px;
   border-radius: 100px;
   border: 1px solid rgba(198,151,105,0.16);
   color: var(--text-muted);
@@ -759,19 +761,19 @@ function onLeave(el: Element, done: () => void) {
 .about-socials {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 22px;
+  gap: 7px;
+  margin-bottom: 14px;
 }
 
 .about-social {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   border: 1px solid rgba(198, 151, 105, 0.34);
   border-radius: 8px;
   color: rgba(236, 228, 211, 0.82);
-  padding: 9px 13px;
-  font-size: 12px;
+  padding: 7px 11px;
+  font-size: 11px;
   transition: border-color 0.25s, color 0.25s, transform 0.25s;
 }
 
@@ -792,7 +794,7 @@ function onLeave(el: Element, done: () => void) {
 
 .about-location {
   color: var(--text-faint);
-  padding-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid var(--border-soft);
 }
 
@@ -810,9 +812,11 @@ function onLeave(el: Element, done: () => void) {
 
   .about-content {
     max-width: 100%;
-    max-height: none;
-    overflow-y: visible;
+    overflow-y: auto;
+    max-height: calc(100dvh - 180px);
     padding-right: 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(198,151,105,0.2) transparent;
   }
 
   .about-cards { grid-template-columns: 1fr 1fr; }

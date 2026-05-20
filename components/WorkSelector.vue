@@ -24,6 +24,11 @@
         </button>
       </div>
 
+      <div ref="bioParagraphEl" class="selector-bio" aria-hidden="true">
+        <p>Je suis Hugo Beignon, développeur full-stack.</p>
+        <p>Depuis plusieurs années, je conçois des produits web avec une attention particulière portée à la clarté, au détail et à la qualité d'exécution. J'explore aujourd'hui le marketing comme un prolongement naturel du travail de conception et de la création digitale.</p>
+      </div>
+
     </div>
 
     <div ref="projectGridEl" class="project-grid" :class="{ visible: state === 'revealed' }" aria-label="Projects">
@@ -232,6 +237,7 @@ const compassViewportEl = ref<HTMLElement | null>(null)
 const curtainEl = ref<HTMLElement | null>(null)
 const detailPanelEl = ref<HTMLElement | null>(null)
 const detailProject = ref<Project | null>(null)
+const bioParagraphEl = ref<HTMLElement | null>(null)
 const showGallery = ref(false)
 
 let isTransitioning = false
@@ -389,6 +395,14 @@ async function chooseCategory(categoryKey: CategoryKey) {
     duration: 0.5,
     ease: 'power2.in'
   })
+  gsap.to(bioParagraphEl.value, {
+    autoAlpha: 0,
+    y: -14,
+    filter: 'blur(8px)',
+    duration: 0.38,
+    ease: 'power2.in',
+    overwrite: true
+  })
   gsap.to(hintEl.value, {
     autoAlpha: 0.78,
     y: -4,
@@ -478,7 +492,7 @@ function revealProjects() {
     onComplete: () => {
       // On ne nettoie pas le transform pour garder le positionnement en arc
       // mais on s'assure que l'opacité/visibilité sont fixées
-      gsap.set(cards, { clearProps: 'filter' })
+      gsap.set(cards, { clearProps: 'filter,transform' })
     }
   })
 }
@@ -675,10 +689,42 @@ onMounted(async () => {
   gap: 22px;
   padding: 0;
   text-align: center;
+  pointer-events: none;
 }
 
 .selector-hint {
+  order: 1;
   min-height: 16px;
+}
+
+.category-zone {
+  order: 2;
+}
+
+.selector-bio {
+  order: 3;
+  max-width: clamp(280px, 34vw, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  will-change: filter, opacity, transform;
+}
+
+.selector-bio p {
+  color: rgba(236, 228, 211, 0.36);
+  font-family: var(--font-sans);
+  font-size: clamp(12px, 0.95vw, 15px);
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+}
+
+.selector-bio p:first-child {
+  color: rgba(236, 228, 211, 0.52);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(14px, 1.15vw, 18px);
+  line-height: 1.4;
 }
 
 .category-zone {
@@ -693,6 +739,7 @@ onMounted(async () => {
 }
 
 .cat {
+  pointer-events: auto;
   min-width: clamp(152px, 13vw, 220px);
   border: 1px solid rgba(198, 151, 105, 0.22);
   border-radius: 8px;
@@ -1320,12 +1367,38 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 16px 6px;
+    padding: 0 16px 6px;
     text-align: center;
   }
 
   .selector-hint {
-    display: none;
+    order: 1;
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+    min-height: 0;
+  }
+
+  .selector-bio {
+    order: -1;
+    display: flex;
+    max-width: 100%;
+    gap: 7px;
+    padding: 0 2px 2px;
+    animation: m-hero-in 0.5s ease both;
+    animation-delay: 0.1s;
+  }
+
+  .selector-bio p {
+    font-size: 11px;
+    line-height: 1.65;
+    color: rgba(236, 228, 211, 0.35);
+  }
+
+  .selector-bio p:first-child {
+    font-size: 12px;
+    color: rgba(236, 228, 211, 0.48);
   }
 
   /* Catégories en ligne scrollable */
@@ -1402,7 +1475,7 @@ onMounted(async () => {
   /* Cartes en arc autour de la boussole */
   .project-grid {
     position: absolute !important;
-    bottom: clamp(215px, 56vw, 255px) !important;
+    bottom: clamp(245px, 63vw, 285px) !important;
     left: 50% !important;
     top: auto !important;
     right: auto !important;

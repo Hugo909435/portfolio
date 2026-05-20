@@ -5,6 +5,7 @@
         <div class="modal-panel">
           <button class="modal-close mono" @click="$emit('close')" aria-label="Fermer">✕</button>
 
+          <img src="/img/logos/transparent-logo.svg" class="modal-logo" alt="" aria-hidden="true" />
           <p class="modal-eyebrow mono">get in touch</p>
           <h2 id="contact-title" class="modal-title serif">Discutons.</h2>
 
@@ -140,6 +141,15 @@ async function submit() {
 
 .modal-close:hover {
   color: var(--text);
+}
+
+.modal-logo {
+  display: block;
+  width: 168px;
+  height: 168px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  opacity: 0.7;
 }
 
 .modal-eyebrow {

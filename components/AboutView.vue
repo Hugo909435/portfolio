@@ -72,7 +72,7 @@
 
             <a
               class="about-social mono"
-              href="https://www.linkedin.com/in/hugo-beignon"
+              href="https://www.linkedin.com/in/hugo-beignon-3ab500366/"
               target="_blank"
               rel="noopener"
               aria-label="Profil LinkedIn de Hugo Beignon"
